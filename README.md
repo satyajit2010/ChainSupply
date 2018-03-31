@@ -15,7 +15,7 @@ A blockchain based Supply Chain
     * npm install -g windows-build-tools
     > Installs python and visual studio code essentials for node repositories to work
 4. Clone the GIT url https://github.com/akhilarjun/ChainSupply.git
-5. Run command cd <path-to-Angular-Workspace> and run the following commands
+5. Run command `cd <path-to-Angular-Workspace>` and run the following commands
     * npm install
     > Installs all the dependencies for project
     * testrpc -m "<the 12 word phrase you stored earlier>"
