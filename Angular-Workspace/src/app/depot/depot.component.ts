@@ -55,8 +55,7 @@ export class DepotComponent implements OnInit {
     public releaseCommodity() {
         console.log('Release: ' + this.quantity + ' of ' + this.commodityId);
         if ( this.depot ) {
-            debugger
-            this.depot.releasCommodity.sendTransaction(this.commodityId, this.quantity,  {from: this.account})
+            this.depot.releaseCommodity.sendTransaction(this.commodityId, this.quantity,  {from: this.account})
                       .then(status => {
                         console.log('success: ' + status);
                         this.refreshtStock(this.commodityId);
