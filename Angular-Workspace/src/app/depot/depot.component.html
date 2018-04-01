@@ -1,0 +1,5 @@
+<div> <span>Quantity:</span> <input [(ngModel)]="quantity"/> </div>
+<div> <span>CommodityId:</span> <input [(ngModel)]="commodityId"/> </div>
+<input (click)="receiveCommodity()" type="button" value="Receive"/>
+<input (click)="releaseCommodity()" type="button" value="Release"/>
+<div>Stock of commodity {{commodityId}}: {{stock}}</div>

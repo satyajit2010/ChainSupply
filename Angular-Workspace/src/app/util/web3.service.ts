@@ -10,7 +10,6 @@ export class Web3Service {
   private web3: Web3;
   private accounts: string[];
   public ready = false;
-  public MetaCoin: any;
   public accountsObservable = new Subject<string[]>();
 
   constructor() {
@@ -33,7 +32,7 @@ export class Web3Service {
       this.web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
     }
 
-    setInterval(() => this.refreshAccounts(), 100);
+    setInterval(() => this.refreshAccounts(), 500);
   }
 
   public async artifactsToContract(artifacts) {
@@ -57,7 +56,7 @@ export class Web3Service {
         return;
       }
 
-      // Get the initial account balance so it can be displayed.
+      // Get the initial account so it can be displayed.
       if (accs.length === 0) {
         console.warn('Couldn\'t get any accounts! Make sure your Ethereum client is configured correctly.');
         return;

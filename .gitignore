@@ -3,3 +3,5 @@ logs
 *.log
 npm-debug.log*
 .npm
+Angular-Workspace/build/
+Angular-Workspace/package-lock.json
