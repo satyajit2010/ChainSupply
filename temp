@@ -1,0 +1,96 @@
+package in.gov.uidai.auth;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
+import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
+
+import in.gov.uidai.auth.aua.helper.DigitalSigner;
+import in.gov.uidai.auth.aua.httpclient.AuthClient;
+import in.gov.uidai.auth.device.helper.AuthAUADataCreator;
+import in.gov.uidai.auth.device.helper.Encrypter;
+import in.gov.uidai.auth.device.model.AuthResponseDetails;
+import in.gov.uidai.authentication.uid_auth_request._1.Auth;
+import in.gov.uidai.authentication.uid_auth_request._1.Auth.Data;
+import in.gov.uidai.authentication.uid_auth_request._1.DataType;
+import in.gov.uidai.authentication.uid_auth_request._1.Uses;
+import in.gov.uidai.authentication.uid_auth_request._1.UsesFlag;
+import in.gov.uidai.authentication.uid_auth_request_data._1.Demo;
+import in.gov.uidai.authentication.uid_auth_request_data._1.MatchingStrategy;
+import in.gov.uidai.authentication.uid_auth_request_data._1.Pi;
+import in.gov.uidai.authentication.uid_auth_request_data._1.Pid;
+
+public class TestClient {
+	public static void main(String[] args) throws URISyntaxException {
+		AuthClient authClient = new AuthClient(new URI("http://developer.uidai.gov.in"));
+		authClient.setAsaLicenseKey("MG41KIrkk5moCkcO8w-2fc01-P7I5S-6X2-X7luVcDgZyOa2LXs3ELI");
+		
+		DigitalSigner ds = new DigitalSigner("/home/satyajit/Downloads/Staging_Signature_PrivateKey.p12", "public".toCharArray(),"public");
+		authClient.setDigitalSignator(ds);
+		Auth auth = new Auth();
+		auth.setUid("999999990019");
+		
+		Data data = new Data();
+		data.setType(DataType.X);
+		auth.setData(data);
+		Uses uses = new Uses();
+		uses.setPi(UsesFlag.Y);
+		uses.setPa(UsesFlag.N);
+		uses.setPin(UsesFlag.N);
+		uses.setOtp(UsesFlag.N);
+		uses.setBio(UsesFlag.N);
+		uses.setPfa(UsesFlag.N);
+		auth.setUses(uses);
+		
+		Pid pid = new Pid();
+		Demo demo = new Demo();
+		Pi pi = new Pi();
+		pi.setMs(MatchingStrategy.P);
+		pi.setMv(1);
+		pi.setName("Shivshankar Choudhury");
+
+		pi.setLmv(1);
+		pi.setLname("Choudhury");
+		
+
+		pi.setDob("13-05-1968");
+		pi.setDobt("V");
+
+		demo.setPi(pi);	
+		pid.setDemo(demo);
+		
+		
+		Calendar calendar = GregorianCalendar.getInstance();
+		pid.setTs(XMLGregorianCalendarImpl.createDateTime(
+				calendar.get(Calendar.YEAR),
+				calendar.get(Calendar.MONTH) + 1,
+				calendar.get(Calendar.DAY_OF_MONTH),
+				calendar.get(Calendar.HOUR_OF_DAY),
+				calendar.get(Calendar.MINUTE),
+				calendar.get(Calendar.SECOND)));
+		
+		AuthAUADataCreator creator = new AuthAUADataCreator(new Encrypter("/home/satyajit/Downloads/uidai_auth_prod.cer"), false);
+		creator.prepareAUAData("999999990019", null, null, pid, DataType.X);
+		
+		auth.setTxn(createTxn("public"));
+		auth.setAc("public");
+		auth.setSa("public");
+		auth.setVer("2.5");
+		auth.setLk("MEaMX8fkRa6PqsqK6wGMrEXcXFl_oXHA-YuknI2uf0gKgZ80HaZgG3A");
+		AuthResponseDetails response = authClient.authenticate(auth);
+	}
+	/**
+	 * Method to construct transaction code based on AUA code and current time.
+	 * @param aua AUA code
+	 * @return String representing transaction code.
+	 */
+	private static String createTxn(String aua) {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddhhmmssSSS");
+		String txn = "AuthDemoClient" + ":" + aua + ":" + dateFormat.format(new Date());
+		return txn;
+	}
+}
